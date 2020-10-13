@@ -40,6 +40,24 @@ module.exports = function createSteamAPI(apiKey) {
     const COMMUNITY_HOSTNAME = 'steamcommunity.com';
     
     /**
+     * Gets backpack for user.
+     * @memberof SteamAPI
+     * @param {string} uri - Request url.
+     * @param {object} [options={}] - Any options to send to request as parameters.
+     * @returns {Promise.<object>} Resolves with the inventory for this user.
+     */
+    async function request(uri, options) {
+        return getJSON({
+            method: 'GET',
+            uri,
+            qs: {
+                key: apiKey,
+                ...options
+            }
+        });
+    }
+    
+    /**
      * Gets classinfo for a classid.
      * @memberof SteamAPI
      * @param {string} appid - Appid.
@@ -67,7 +85,7 @@ module.exports = function createSteamAPI(apiKey) {
         );
         
         if (!classinfo) {
-            return Promise.reject(new Error(`No classinfo for "${classid}"`));
+            throw new Error(`No classinfo for "${classid}"`);
         }
         
         return fixClassInfo(classinfo);
@@ -164,7 +182,7 @@ module.exports = function createSteamAPI(apiKey) {
         );
         
         if (!hasItems) {
-            return Promise.reject(new Error('No items in response object'));
+            throw new Error('No items in response object');
         }
         
         return backpack;
@@ -222,11 +240,46 @@ module.exports = function createSteamAPI(apiKey) {
        });
     }
     
+    /**
+     * Gets backpack for user.
+     * @memberof SteamAPI
+     * @param {string} appid - Appid.
+     * @param {string} ugcid - Ugcid.
+     * @param {string} [steamid] - Steamid.
+     * @param {object} [options={}] - Any additional options to send to request as parameters.
+     * @returns {Promise.<UGCFileDetailsResponse>} Resolves with the inventory for this user.
+     */
+    async function getUGCFileDetails(appid, ugcid, steamid, options = {}) {
+        const response = await getJSON({
+            method: 'GET',
+            uri: `https://${API_HOSTNAME}/ISteamRemoteStorage/GetUGCFileDetails/v1/`,
+            qs: {
+                steamid,
+                appid,
+                ugcid,
+                key: apiKey,
+                ...options
+            }
+        });
+        
+        if (response.status === 9) {
+            throw new Error('Given ID not found.')
+        }
+        
+        if (!response.data) {
+            throw new Error('No response data.');
+        }
+        
+        return response.data;
+    }
+    
     return {
+        request,
         getAssetClassInfo,
         getAssetClassInfos,
         getBackpack,
-        getInventory
+        getInventory,
+        getUGCFileDetails
     };
 }
 
@@ -322,7 +375,6 @@ module.exports = function createSteamAPI(apiKey) {
  */
 
 /**
- * Inventory.
  * A user's inventory.
  * @typedef {InventoryItem[]} Inventory
  */
@@ -336,3 +388,12 @@ module.exports = function createSteamAPI(apiKey) {
  * @property {string} instanceid - Instanceid.
  * @property {string} amount - Amount.
  */
+
+/**
+ * UGC file details.
+ * @typedef {object} UGCFileDetailsResponse
+ * @property {number} [status] - Status.
+ * @property {string} [filename] - Filename.
+ * @property {string} [url] - URL.
+ * @property {number} [size] - Size.
+ **/
