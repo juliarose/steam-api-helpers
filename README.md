@@ -44,16 +44,20 @@ async function getTF2Inventory(steamid) {
 #### Table of Contents
 
 -   [SteamAPI](#steamapi)
-    -   [getAssetClassInfo](#getassetclassinfo)
+    -   [request](#request)
         -   [Parameters](#parameters)
-    -   [getAssetClassInfos](#getassetclassinfos)
+    -   [getAssetClassInfo](#getassetclassinfo)
         -   [Parameters](#parameters-1)
-    -   [getBackpack](#getbackpack)
+    -   [getAssetClassInfos](#getassetclassinfos)
         -   [Parameters](#parameters-2)
-    -   [getInventory](#getinventory)
+    -   [getBackpack](#getbackpack)
         -   [Parameters](#parameters-3)
+    -   [getInventory](#getinventory)
+        -   [Parameters](#parameters-4)
+    -   [getUGCFileDetails](#getugcfiledetails)
+        -   [Parameters](#parameters-5)
 -   [createSteamAPI](#createsteamapi)
-    -   [Parameters](#parameters-4)
+    -   [Parameters](#parameters-6)
 -   [ClassInfo](#classinfo)
     -   [Properties](#properties)
 -   [ClassInfoAction](#classinfoaction)
@@ -72,12 +76,25 @@ async function getTF2Inventory(steamid) {
 -   [Inventory](#inventory)
 -   [InventoryItem](#inventoryitem)
     -   [Properties](#properties-7)
+-   [UGCFileDetailsResponse](#ugcfiledetailsresponse)
+    -   [Properties](#properties-8)
 
 ### SteamAPI
 
 Interface for Steam API.
 
 Type: [object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
+
+#### request
+
+Gets backpack for user.
+
+##### Parameters
+
+-   `uri` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Request url.
+-   `options` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** Any options to send to request as parameters. (optional, default `{}`)
+
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)>** Resolves with the inventory for this user.
 
 #### getAssetClassInfo
 
@@ -128,6 +145,19 @@ Gets backpack for user.
 -   `options` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** Any additional options to send to request as parameters. (optional, default `{}`)
 
 Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Inventory](#inventory)>** Resolves with the inventory for this user.
+
+#### getUGCFileDetails
+
+Gets backpack for user.
+
+##### Parameters
+
+-   `appid` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Appid.
+-   `ugcid` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Ugcid.
+-   `steamid` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** Steamid.
+-   `options` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** Any additional options to send to request as parameters. (optional, default `{}`)
+
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[UGCFileDetailsResponse](#ugcfiledetailsresponse)>** Resolves with the inventory for this user.
 
 ### createSteamAPI
 
@@ -261,7 +291,6 @@ Type: [object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Globa
 
 ### Inventory
 
-Inventory.
 A user's inventory.
 
 Type: [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[InventoryItem](#inventoryitem)>
@@ -279,6 +308,20 @@ Type: [ClassInfo](#classinfo)
 -   `assetid` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Assetid.
 -   `instanceid` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Instanceid.
 -   `amount` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Amount.
+
+### UGCFileDetailsResponse
+
+UGC file details.
+
+Type: [object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
+
+#### Properties
+
+-   `status` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** Status.
+-   `filename` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** Filename.
+-   `url` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** URL.
+-   `size` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** Size.
+    \*
 
 ## License
 
