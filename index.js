@@ -262,7 +262,7 @@ module.exports = function createSteamAPI(apiKey) {
             }
         });
         
-        if (response.status === 9) {
+        if (response.status && response.status.code === 9) {
             throw new Error('Given ID not found.')
         }
         
