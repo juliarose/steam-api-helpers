@@ -56,8 +56,10 @@ async function getTF2Inventory(steamid) {
         -   [Parameters](#parameters-4)
     -   [getUGCFileDetails](#getugcfiledetails)
         -   [Parameters](#parameters-5)
+    -   [getTradeHistory](#gettradehistory)
+        -   [Parameters](#parameters-6)
 -   [createSteamAPI](#createsteamapi)
-    -   [Parameters](#parameters-6)
+    -   [Parameters](#parameters-7)
 -   [ClassInfo](#classinfo)
     -   [Properties](#properties)
 -   [ClassInfoAction](#classinfoaction)
@@ -78,6 +80,12 @@ async function getTF2Inventory(steamid) {
     -   [Properties](#properties-7)
 -   [UGCFileDetailsResponse](#ugcfiledetailsresponse)
     -   [Properties](#properties-8)
+-   [TradeHistoryTradeItem](#tradehistorytradeitem)
+    -   [Properties](#properties-9)
+-   [TradeHistoryTrade](#tradehistorytrade)
+    -   [Properties](#properties-10)
+-   [TradeHistoryResponse](#tradehistoryresponse)
+    -   [Properties](#properties-11)
 
 ### SteamAPI
 
@@ -157,7 +165,26 @@ Gets backpack for user.
 -   `steamid` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** Steamid.
 -   `options` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** Any additional options to send to request as parameters. (optional, default `{}`)
 
-Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[UGCFileDetailsResponse](#ugcfiledetailsresponse)>** Resolves with the inventory for this user.
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[UGCFileDetailsResponse](#ugcfiledetailsresponse)>** Resolves with the UGC details for this item.
+
+#### getTradeHistory
+
+Gets backpack for user.
+
+##### Parameters
+
+-   `options` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** Any options to send to request as parameters. (optional, default `{}`)
+    -   `options.max_trades` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** The number of trades to return information for.
+    -   `options.start_after_time` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** The time of the last trade shown on the previous page of results, or the time of the first trade if navigating back.
+    -   `options.start_after_tradeid` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** The tradeid shown on the previous page of results, or the ID of the first trade if navigating back.
+    -   `options.navigating_back` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** The user wants the previous page of results, so return the previous max_trades trades before the start time and ID.
+    -   `options.get_descriptions` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** If set, the item display data for the items included in the returned trades will also be returned.
+    -   `options.language` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** The language to use when loading item display data.
+    -   `options.include_failed` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** Include failed trades.
+    -   `options.include_total` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** If set, the total number of trades the account has participated in will be included in the response.
+    -   `options.combine_descriptions` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?**     If set, merge descriptions in response with items.
+
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[TradeHistoryResponse](#tradehistoryresponse)>** Resolves with the trade history results for given query.
 
 ### createSteamAPI
 
@@ -321,7 +348,51 @@ Type: [object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Globa
 -   `filename` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** Filename.
 -   `url` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** URL.
 -   `size` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** Size.
-    \*
+
+### TradeHistoryTradeItem
+
+A trade from your trade history.
+
+Type: [object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
+
+#### Properties
+
+-   `appid` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** Appid.
+-   `contextid` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Contextid.
+-   `assetid` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Assetid.
+-   `amount` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Amount.
+-   `classid` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Classid.
+-   `instanceid` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Instanceid.
+-   `new_assetid` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** New assetid.
+-   `new_contextid` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** New contextid.
+
+### TradeHistoryTrade
+
+A trade from your trade history.
+
+Type: [object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
+
+#### Properties
+
+-   `tradeid` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Tradeid.
+-   `steamid_other` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The steamid of the other trader.
+-   `time_init` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** Time of trade.
+-   `status` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** Trade status.
+-   `assets_received` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[TradeHistoryTradeItem](#tradehistorytradeitem)>?** Items received.
+-   `assets_given` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[TradeHistoryTradeItem](#tradehistorytradeitem)>?** Items given.
+
+### TradeHistoryResponse
+
+Trade history details.
+
+Type: [object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
+
+#### Properties
+
+-   `trades` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[TradeHistoryTrade](#tradehistorytrade)>** Trades.
+-   `more` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** Whether there are more results or not.
+-   `descriptions` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[ClassInfo](#classinfo)>?** Array of classinfos for items.
+-   `url` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** URL.
 
 ## License
 
