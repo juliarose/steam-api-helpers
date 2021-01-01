@@ -4,9 +4,9 @@ const { getJSON } = require('./requests');
 const { uniq, promiseSeries, reduceChunk, groupBy, indexBy, sleep } = require('./utils');
 
 /**
- * Converts array-like objects into arrays on classinfo response.
+ * Converts array-like objects into arrays on classinfo response. This modifies the original object.
  * @private
- * @param {ClassInfo} Classinfo - Classinfo.
+ * @param {ClassInfo} classinfo - Classinfo.
  * @returns {ClassInfo} Classinfo.
  */
 function fixClassInfo(classinfo) {
@@ -22,6 +22,55 @@ function fixClassInfo(classinfo) {
     });
     
     return classinfo;
+}
+
+/**
+ * Merges the descriptions to the items in the trade. This modifies the original object.
+ * @private
+ * @param {TradeHistoryResponse} response - Trade history response.
+ * @returns {ClassInfo} Classinfo.
+ */
+function mergeTradeHistoryResponseDescriptions(response) {
+    // adds descriptions to the trade item
+    function withDescriptions(items) {
+        return items.map((item) => {
+            const classinfo = (
+                table[item.appid] &&
+                table[item.appid][item.classid]
+            ) || {};
+            
+            // combine them
+            return {
+                ...item,
+                ...classinfo
+            };
+        });
+    }
+    
+    const table = Object.entries(groupBy(response.descriptions, 'appid'))
+        .reduce((table, [appid, classinfo]) => {
+            table[appid] = indexBy(classinfo, 'classid');
+            
+            return table;
+        }, {});
+    
+    // merge the descriptions onto each asset
+    response.trades = response.trades.map((trade) => {
+        if (trade.assets_given !== undefined) {
+            trade.assets_given = withDescriptions(trade.assets_given);
+        }
+        
+        if (trade.assets_received !== undefined) {
+            trade.assets_received = withDescriptions(trade.assets_received);
+        }
+        
+        return trade;
+    });
+    
+    // these are no longer needed
+    delete response.descriptions;
+    
+    return response;
 }
 
 /**
@@ -247,7 +296,7 @@ module.exports = function createSteamAPI(apiKey) {
      * @param {string} ugcid - Ugcid.
      * @param {string} [steamid] - Steamid.
      * @param {object} [options={}] - Any additional options to send to request as parameters.
-     * @returns {Promise.<UGCFileDetailsResponse>} Resolves with the inventory for this user.
+     * @returns {Promise.<UGCFileDetailsResponse>} Resolves with the UGC details for this item.
      */
     async function getUGCFileDetails(appid, ugcid, steamid, options = {}) {
         const response = await getJSON({
@@ -273,13 +322,60 @@ module.exports = function createSteamAPI(apiKey) {
         return response.data;
     }
     
+    /**
+     * Gets backpack for user.
+     * @memberof SteamAPI
+     * @param {object} [options={}] - Any options to send to request as parameters.
+     * @param {number} [options.max_trades] - The number of trades to return information for.
+     * @param {number} [options.start_after_time] - The time of the last trade shown on the previous page of results, or the time of the first trade if navigating back.
+     * @param {number} [options.start_after_tradeid] - The tradeid shown on the previous page of results, or the ID of the first trade if navigating back.
+     * @param {number} [options.navigating_back] - The user wants the previous page of results, so return the previous max_trades trades before the start time and ID.
+     * @param {number} [options.get_descriptions] - If set, the item display data for the items included in the returned trades will also be returned.
+     * @param {number} [options.language] - The language to use when loading item display data.
+     * @param {number} [options.include_failed] - Include failed trades.
+     * @param {number} [options.include_total] - If set, the total number of trades the account has participated in will be included in the response.
+     * @param {boolean} [options.combine_descriptions] - 	If set, merge descriptions in response with items.
+     * @returns {Promise.<TradeHistoryResponse>} Resolves with the trade history results for given query.
+     */
+    async function getTradeHistory(options = {}) {
+        // copy the options so we do not modify the original object
+        const params = {
+            ...options
+        };
+        const { combine_descriptions } = params;
+        
+        // this is not passed to the request
+        delete params.combine_descriptions;
+        
+        const response = await getJSON({
+            method: 'GET',
+            uri: `https://${API_HOSTNAME}/IEconService/GetTradeHistory/v1/`,
+            qs: {
+                key: apiKey,
+                ...params
+            }
+        });
+        
+        if (!response.response) {
+            throw new Error('No response data.');
+        }
+        
+        if (combine_descriptions) {
+            return mergeTradeHistoryResponseDescriptions(response.response);
+        }
+        
+        // data is in response
+        return response.response;
+    }
+    
     return {
         request,
         getAssetClassInfo,
         getAssetClassInfos,
         getBackpack,
         getInventory,
-        getUGCFileDetails
+        getUGCFileDetails,
+        getTradeHistory
     };
 }
 
@@ -396,4 +492,38 @@ module.exports = function createSteamAPI(apiKey) {
  * @property {string} [filename] - Filename.
  * @property {string} [url] - URL.
  * @property {number} [size] - Size.
- **/
+ */
+ 
+ /**
+  * A trade from your trade history.
+  * @typedef {object} TradeHistoryTradeItem
+  * @property {number} appid - Appid.
+  * @property {string} contextid - Contextid.
+  * @property {string} assetid - Assetid.
+  * @property {string} amount - Amount.
+  * @property {string} classid - Classid.
+  * @property {string} instanceid - Instanceid.
+  * @property {string} new_assetid - New assetid.
+  * @property {string} new_contextid - New contextid.
+  */
+ 
+ /**
+  * A trade from your trade history.
+  * @typedef {object} TradeHistoryTrade
+  * @property {string} tradeid - Tradeid.
+  * @property {string} steamid_other - The steamid of the other trader.
+  * @property {number} time_init - Time of trade.
+  * @property {number} status - Trade status.
+  * @property {TradeHistoryTradeItem[]} [assets_received] - Items received.
+  * @property {TradeHistoryTradeItem[]} [assets_given] - Items given.
+  */
+
+/**
+ * Trade history details.
+ * @typedef {object} TradeHistoryResponse
+ * @property {TradeHistoryTrade[]} trades - Trades.
+ * @property {boolean} more - Whether there are more results or not.
+ * @property {ClassInfo[]} [descriptions] - Array of classinfos for items.
+ * @property {string} [url] - URL.
+ */
+ 
