@@ -169,7 +169,7 @@ Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 
 #### getTradeHistory
 
-Gets backpack for user.
+Gets your trade history.
 
 ##### Parameters
 

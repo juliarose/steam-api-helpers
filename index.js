@@ -323,7 +323,7 @@ module.exports = function createSteamAPI(apiKey) {
     }
     
     /**
-     * Gets backpack for user.
+     * Gets your trade history.
      * @memberof SteamAPI
      * @param {object} [options={}] - Any options to send to request as parameters.
      * @param {number} [options.max_trades] - The number of trades to return information for.
