@@ -1,6 +1,6 @@
 {
   "name": "steam-api-helpers",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Helpers for Steam API",
   "main": "index.js",
   "scripts": {
