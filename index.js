@@ -111,7 +111,7 @@ module.exports = function createSteamAPI(apiKey) {
      * @memberof SteamAPI
      * @param {string[]} steamids - Steam IDs.
      * @param {string} [format='json'] - Format.
-     * @returns {Promise.<PlayerSummary[]>} Resolves with classinfo.
+     * @returns {Promise.<PlayerSummary[]>} Resolves with player summaries.
      */
     async function getPlayerSummaries(steamids, format = 'json') {
         const response = await getJSON({
