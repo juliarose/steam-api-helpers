@@ -46,46 +46,50 @@ async function getTF2Inventory(steamid) {
 -   [SteamAPI](#steamapi)
     -   [request](#request)
         -   [Parameters](#parameters)
-    -   [getAssetClassInfo](#getassetclassinfo)
+    -   [getPlayerSummaries](#getplayersummaries)
         -   [Parameters](#parameters-1)
-    -   [getAssetClassInfos](#getassetclassinfos)
+    -   [getAssetClassInfo](#getassetclassinfo)
         -   [Parameters](#parameters-2)
-    -   [getBackpack](#getbackpack)
+    -   [getAssetClassInfos](#getassetclassinfos)
         -   [Parameters](#parameters-3)
-    -   [getInventory](#getinventory)
+    -   [getBackpack](#getbackpack)
         -   [Parameters](#parameters-4)
-    -   [getUGCFileDetails](#getugcfiledetails)
+    -   [getInventory](#getinventory)
         -   [Parameters](#parameters-5)
-    -   [getTradeHistory](#gettradehistory)
+    -   [getUGCFileDetails](#getugcfiledetails)
         -   [Parameters](#parameters-6)
+    -   [getTradeHistory](#gettradehistory)
+        -   [Parameters](#parameters-7)
 -   [createSteamAPI](#createsteamapi)
-    -   [Parameters](#parameters-7)
--   [ClassInfo](#classinfo)
+    -   [Parameters](#parameters-8)
+-   [PlayerSummary](#playersummary)
     -   [Properties](#properties)
--   [ClassInfoAction](#classinfoaction)
+-   [ClassInfo](#classinfo)
     -   [Properties](#properties-1)
--   [ClassInfoDescription](#classinfodescription)
+-   [ClassInfoAction](#classinfoaction)
     -   [Properties](#properties-2)
--   [ClassInfoTag](#classinfotag)
+-   [ClassInfoDescription](#classinfodescription)
     -   [Properties](#properties-3)
+-   [ClassInfoTag](#classinfotag)
+    -   [Properties](#properties-4)
 -   [ClassInfoContainer](#classinfocontainer)
 -   [BackpackItemAttribute](#backpackitemattribute)
-    -   [Properties](#properties-4)
--   [Backpack](#backpack)
     -   [Properties](#properties-5)
--   [BackpackItem](#backpackitem)
+-   [Backpack](#backpack)
     -   [Properties](#properties-6)
+-   [BackpackItem](#backpackitem)
+    -   [Properties](#properties-7)
 -   [Inventory](#inventory)
 -   [InventoryItem](#inventoryitem)
-    -   [Properties](#properties-7)
--   [UGCFileDetailsResponse](#ugcfiledetailsresponse)
     -   [Properties](#properties-8)
--   [TradeHistoryTradeItem](#tradehistorytradeitem)
+-   [UGCFileDetailsResponse](#ugcfiledetailsresponse)
     -   [Properties](#properties-9)
--   [TradeHistoryTrade](#tradehistorytrade)
+-   [TradeHistoryTradeItem](#tradehistorytradeitem)
     -   [Properties](#properties-10)
--   [TradeHistoryResponse](#tradehistoryresponse)
+-   [TradeHistoryTrade](#tradehistorytrade)
     -   [Properties](#properties-11)
+-   [TradeHistoryResponse](#tradehistoryresponse)
+    -   [Properties](#properties-12)
 
 ### SteamAPI
 
@@ -103,6 +107,17 @@ Gets backpack for user.
 -   `options` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** Any options to send to request as parameters. (optional, default `{}`)
 
 Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)>** Resolves with the inventory for this user.
+
+#### getPlayerSummaries
+
+Gets player summaries for given steamids.
+
+##### Parameters
+
+-   `steamids` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** Steam IDs.
+-   `format` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Format. (optional, default `'json'`)
+
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[PlayerSummary](#playersummary)>>** Resolves with classinfo.
 
 #### getAssetClassInfo
 
@@ -195,6 +210,36 @@ Creates an interface for making requests to the Steam API.
 -   `apiKey` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** API key to use for requests.
 
 Returns **[SteamAPI](#steamapi)** SteamAPI interface.
+
+### PlayerSummary
+
+Player summary.
+
+Type: [object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
+
+#### Properties
+
+-   `steamid` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 64bit SteamID of the user.
+-   `personaname` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The player's persona name (display name).
+-   `profileurl` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The full URL of the player's Steam Community profile.
+-   `avatar` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The full URL of the player's 32x32px avatar. If the user hasn't configured an avatar, this will be the default ? avatar.
+-   `avatarmedium` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The full URL of the player's 64x64px avatar. If the user hasn't configured an avatar, this will be the default ? avatar.
+-   `avatarfull` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The full URL of the player's 184x184px avatar. If the user hasn't configured an avatar, this will be the default ? avatar.
+-   `personastate` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** The user's current status. 0 - Offline, 1 - Online, 2 - Busy, 3 - Away, 4 - Snooze, 5 - looking to trade, 6 - looking to play. If the player's profile is private, this will always be "0", except is the user has set his status to looking to trade or looking to play, because a bug makes those status appear even if the profile is private.
+-   `communityvisibilitystate` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** This represents whether the profile is visible or not, and if it is visible, why you are allowed to see it. Note that because this WebAPI does not use authentication, there are only two possible values returned: 1 - the profile is not visible to you (Private, Friends Only, etc), 3 - the profile is "Public", and the data is visible. Mike Blaszczak's post on Steam forums says, "The community visibility state this API returns is different than the privacy state. It's the effective visibility state from the account making the request to the account being viewed given the requesting account's relationship to the viewed account."
+-   `profilestate` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** If set, indicates the user has a community profile configured (will be set to '1')
+-   `lastlogoff` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** The last time the user was online, in unix time.
+-   `commentpermission` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** If set, indicates the profile allows public comments.
+-   `realname` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** The player's "Real Name", if they have set it.
+-   `primaryclanid` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** The player's primary group, as configured in their Steam Community profile.
+-   `timecreated` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** The time the player's account was created.
+-   `gameid` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** If the user is currently in-game, this value will be returned and set to the gameid of that game.
+-   `gameserverip` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** The ip and port of the game server the user is currently playing on, if they are playing on-line in a game using Steam matchmaking. Otherwise will be set to "0.0.0.0:0".
+-   `gameextrainfo` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** If the user is currently in-game, this will be the name of the game they are playing. This may be the name of a non-Steam game shortcut.
+-   `cityid` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** This value will be removed in a future update (see loccityid).
+-   `loccountrycode` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** If set on the user's Steam Community profile, The user's country of residence, 2-character ISO country code.
+-   `locstatecode` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** If set on the user's Steam Community profile, The user's state of residence.
+-   `loccityid` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** An internal code indicating the user's city of residence. A future update will provide this data in a more useful way.
 
 ### ClassInfo
 
